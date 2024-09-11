@@ -1,9 +1,15 @@
-//Hello World
-let message = "Hello world!"
-console.log(message);
+//arrays
+let metas = ["mayk", "alo"]
 
-message = "Hi"
-console.log(message);
+console.log(metas[0] + " " + metas[1]);
 
-const msg2 = "World Hello!" //can`t change the value
-console.log(msg2);
+//object
+let meta = {
+  value: "ler um livro por mês",
+  checked: false
+}
+
+console.log(meta.value)
+
+//function
+const criarMeta = () => {}
