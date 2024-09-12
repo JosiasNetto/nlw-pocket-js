@@ -1,37 +1,41 @@
+//Desestruturando e adcionando funções diretamente ao codigo
 const  { select, input, checkbox }  = require('@inquirer/prompts')
 
+//Declarando lista de metas
 let metas = []
 
+//Funcao assincrona que criar uma meta
 const cadastrar_meta = async () => {
-  const meta = await input({message: "Digite a meta:"})
+  const meta = await input({message: "Digite a meta:"}) //Recebe a meta do usuario
 
-  if(!meta.length) {
+  if(!meta.length) {  //Verifica se algo foi digitado
     console.log("A meta não pode ser vazia")
-    return
+    return //Caso n tenha sido, retorna para a aba de opcoes
   }
 
-  metas.push({value: meta, checked: false})
+  metas.push({value: meta, checked: false}) //Adciona o objeto da meta a lista de metas
 
 }
 
-const listar_metas = async () => {
-  const respostas = await checkbox({
+const listar_metas = async () => {  //Funcao assincrona que lista as metas existentes
+  //Declara a lista de respostas com as metas marcadas pelo usuario no checkbox de metas
+  const respostas = await checkbox({  
     message: "Use as setas para mudar de meta, o Espaço para marcar ou desmarcar e o Enter para finalizar essa etapa",
     choices: [...metas],
     instructions: false
   })
 
-  metas.forEach((m) => {
+  metas.forEach((m) => {  //Declara todas as metas como n realizadas
     m.checked = false
   })
   
-  if(!respostas.length) {
+  if(!respostas.length) { //Verifica se existe alguma meta marcada
     console.log("Nenhuma meta selecionada!")
     return
   }
 
   
-  respostas.forEach((resposta) => {
+  respostas.forEach((resposta) => { //Para cada resposta, a procura na lista de metas e a marca como feita
     const meta = metas.find((m) => {
       return m.value == resposta
     })
@@ -40,16 +44,16 @@ const listar_metas = async () => {
 
   })
 
-  console.log("Meta(s) marcada(s) como concluida(s)")
+  console.log("Meta(s) marcada(s) como concluida(s)") //Msg de que as metas foram marcadas
 }
 
-const start = async () => {
+const start = async () => { //Funcao que inicia o app
 
   while(true){
 
-    const opcao = await select({
-      message: "Menu >",
-      choices: [
+    const opcao = await select({  //Declara a opcao do usuario por meio da funcao select
+      message: "Menu >",  //Mensagem que aparece no topo
+      choices: [  //Lista que guarda as opcoes e seus valores 
         {
           name: "Cadastrar meta",
           value: "cadastrar"
@@ -65,7 +69,7 @@ const start = async () => {
       ]
     })
 
-    switch(opcao){
+    switch(opcao){  //Verifica a opcao do usuario, e executa o seu caso
       case "cadastrar":
         await cadastrar_meta()
         console.log(metas)
