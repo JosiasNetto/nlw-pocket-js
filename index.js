@@ -1,24 +1,48 @@
 //Desestruturando e adcionando funções diretamente ao codigo
 const  { select, input, checkbox }  = require('@inquirer/prompts')
+const fs = require('fs').promises
+
+let mensagem = "Bem vindo ao App de metas"
 
 //Declarando lista de metas
-let metas = []
+let metas
+
+const carregar_metas = async () => {
+    try{
+        const dados = await fs.readFile("metas.json", "utf-8")
+        metas = JSON.parse(dados)
+    }
+    catch(erro){
+        metas = []
+    }
+}
+
+const salvar_metas = async () => {
+    await fs.writeFile("metas.json", JSON.stringify(metas, null, 2))
+}
+
 
 //Funcao assincrona que criar uma meta
 const cadastrar_meta = async () => {
   const meta = await input({message: "Digite a meta:"}) //Recebe a meta do usuario
 
   if(!meta.length) {  //Verifica se algo foi digitado
-    console.log("A meta não pode ser vazia")
+    mensagem = "A meta não pode ser vazia"
     return //Caso n tenha sido, retorna para a aba de opcoes
   }
 
   metas.push({value: meta, checked: false}) //Adciona o objeto da meta a lista de metas
 
+  mensagem = "Meta cadastrada com sucesso!"
+
 }
 
 const listar_metas = async () => {  //Funcao assincrona que lista as metas existentes
   //Declara a lista de respostas com as metas marcadas pelo usuario no checkbox de metas
+  if(metas.length == 0) {
+    mensagem = "Você não cadastrou nenhuma meta"
+    return
+  }
   const respostas = await checkbox({  
     message: "Use as setas para mudar de meta, o Espaço para marcar ou desmarcar e o Enter para finalizar essa etapa",
     choices: [...metas],
@@ -30,7 +54,7 @@ const listar_metas = async () => {  //Funcao assincrona que lista as metas exist
   })
   
   if(!respostas.length) { //Verifica se existe alguma meta marcada
-    console.log("Nenhuma meta selecionada!")
+    mensagem = "Nenhuma meta selecionada!"
     return
   }
 
@@ -44,7 +68,9 @@ const listar_metas = async () => {  //Funcao assincrona que lista as metas exist
 
   })
 
-  console.log("Meta(s) marcada(s) como concluida(s)") //Msg de que as metas foram marcadas
+ 
+  mensagem = "Meta(s) marcada(s) como concluida(s)" //Msg de que as metas foram marcadas
+  
 }
 
 const metas_realizadas = async () => {
@@ -53,7 +79,7 @@ const metas_realizadas = async () => {
     })
 
     if(!realizadas.length){
-        console.log("Não existem metas realizadas")
+        mensagem = "Não existem metas realizadas"
         return
     }
 
@@ -69,7 +95,7 @@ const metas_abertas = async () => {
     })
 
     if(abertas.length == 0){
-        console.log("Não existem metas abertas!:)")
+        mensagem = "Não existem metas abertas!:)"
         return
     }
 
@@ -80,6 +106,12 @@ const metas_abertas = async () => {
 }
 
 const deletar_metas = async () => {
+
+    if(metas.length == 0) {
+        mensagem = "Você não cadastrou nenhuma meta para deletar"
+        return
+      }
+
     const metasDesmarcadas = metas.map((meta) =>{
         return {value: meta.value, checked: false}
     })
@@ -91,7 +123,7 @@ const deletar_metas = async () => {
       })
 
     if(itemsADeletar.length == 0){
-        console.log("Nenhum item para deletar")
+        mensagem = "Nenhum item para deletar"
         return
     }
 
@@ -101,12 +133,27 @@ const deletar_metas = async () => {
         })
     })
 
-    console.log("Meta(s) deletada(s) com sucesso!")
+    mensagem = "Meta(s) deletada(s) com sucesso!"
+}
+
+const mostrar_mensagem = () => {
+    console.clear()
+
+    if(mensagem != ""){
+        console.log(mensagem)
+        console.log("")
+        mensagem = ""
+    }
 }
 
 const start = async () => { //Funcao que inicia o app
+    
+    await carregar_metas()
+   
 
   while(true){
+    await salvar_metas()
+    mostrar_mensagem()
 
     const opcao = await select({  //Declara a opcao do usuario por meio da funcao select
       message: "Menu >",  //Mensagem que aparece no topo
