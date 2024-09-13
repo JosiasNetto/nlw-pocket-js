@@ -47,6 +47,38 @@ const listar_metas = async () => {  //Funcao assincrona que lista as metas exist
   console.log("Meta(s) marcada(s) como concluida(s)") //Msg de que as metas foram marcadas
 }
 
+const metas_realizadas = async () => {
+    const realizadas = metas.filter((meta) => {
+        return meta.checked
+    })
+
+    if(!realizadas.length){
+        console.log("Não existem metas realizadas")
+        return
+    }
+
+    await select({
+        message: "Metas Realizadas",
+        choices: [...realizadas]
+    })
+}
+
+const metas_abertas = async () => {
+    const abertas = metas.filter((meta) => {
+        return !meta.checked
+    })
+
+    if(abertas.length == 0){
+        console.log("Não existem metas abertas!:)")
+        return
+    }
+
+    await select({
+        message: "Metas abertas: " + abertas.length,
+        choices: [...abertas]
+    })
+}
+
 const start = async () => { //Funcao que inicia o app
 
   while(true){
@@ -63,6 +95,14 @@ const start = async () => { //Funcao que inicia o app
           value: "listar"
         },
         {
+          name: "Metas realizadas",
+          value: "realizadas"
+        },
+        {
+          name: "Metas abertas",
+          value: "abertas"
+        },
+        {
           name:"Sair",
           value:"sair"
         }
@@ -76,6 +116,12 @@ const start = async () => { //Funcao que inicia o app
         break
       case "listar":
         await listar_metas()
+        break
+      case "realizadas":
+        await metas_realizadas()
+        break
+      case "abertas":
+        await metas_abertas()
         break
       case "sair":
         console.log("Ate a proxima!")
