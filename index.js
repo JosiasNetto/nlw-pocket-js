@@ -58,7 +58,7 @@ const metas_realizadas = async () => {
     }
 
     await select({
-        message: "Metas Realizadas",
+        message: "Metas Realizadas: " + realizadas.length,
         choices: [...realizadas]
     })
 }
@@ -77,6 +77,31 @@ const metas_abertas = async () => {
         message: "Metas abertas: " + abertas.length,
         choices: [...abertas]
     })
+}
+
+const deletar_metas = async () => {
+    const metasDesmarcadas = metas.map((meta) =>{
+        return {value: meta.value, checked: false}
+    })
+
+    const itemsADeletar = await checkbox({  
+        message: "Selecione item para deletar",
+        choices: [...metasDesmarcadas],
+        instructions: false
+      })
+
+    if(itemsADeletar.length == 0){
+        console.log("Nenhum item para deletar")
+        return
+    }
+
+    itemsADeletar.forEach((item) => {
+        metas = metas.filter((meta) => {
+            return meta.value != item
+        })
+    })
+
+    console.log("Meta(s) deletada(s) com sucesso!")
 }
 
 const start = async () => { //Funcao que inicia o app
@@ -103,6 +128,10 @@ const start = async () => { //Funcao que inicia o app
           value: "abertas"
         },
         {
+          name: "Deletar metas",
+          value: "deletar"
+        },
+        {
           name:"Sair",
           value:"sair"
         }
@@ -122,6 +151,9 @@ const start = async () => { //Funcao que inicia o app
         break
       case "abertas":
         await metas_abertas()
+        break
+      case "deletar":
+        await deletar_metas()
         break
       case "sair":
         console.log("Ate a proxima!")
